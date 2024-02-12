@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
-import 'ExternalLinks.dart';
+import '../ExternalLinks.dart';
+import '../model/Professor.dart';
+import '../repository/ProfessorsRepository.dart';
+import 'ProfessorDetailScreen.dart';
 
-class Professor {
-  final String fullName;
-  final String photoUrl;
 
-  const Professor({required this.fullName, required this.photoUrl});
-}
 
 class ProfessorsScreen extends StatefulWidget {
   const ProfessorsScreen({super.key});
@@ -27,35 +25,15 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
   void initState() {
     super.initState();
 
-    getAllProfessors();
+    fetchProfessors();
   }
 
-  Future<void> getAllProfessors() async {
-    final url =
-        Uri.parse(Links.PROFESSORS_LINK);
-    final response = await http.get(url);
-    dom.Document html = dom.Document.html(response.body);
-
-    final allProfessorsFullNames = html
-        .querySelectorAll('h2 > a')
-        .map((element) => element.innerHtml.trim())
-        .toList();
-    final allProfessorsImageUrls = html
-        .querySelectorAll('div > div > div > div > img')
-        .map((element) => element.attributes['src']!)
-        .toList();
-
+  Future<void> fetchProfessors() async {
+    final repository = ProfessorsRepository();
+    await repository.checkProfessorsInDatabase();
     setState(() {
-      professors = List.generate(
-          allProfessorsFullNames.length,
-              (index) => Professor(
-                  fullName: allProfessorsFullNames[index].toString(),
-                  photoUrl: allProfessorsImageUrls[index].toString()
-              )
-      );
-      filteredProfessors = List.from(professors);
+      professors = repository.professors;
     });
-
   }
 
   void filterProfessors(String query) {
@@ -90,16 +68,27 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(12),
-                  itemCount: filteredProfessors.length,
+                  itemCount: filteredProfessors.isEmpty ? professors.length : filteredProfessors.length,
                   itemBuilder: (context, index) {
-                    final professor = filteredProfessors[index];
+                    final professor = filteredProfessors.isEmpty ? professors[index] : filteredProfessors[index];
 
-                    return ListTile(
-                      leading: Image.network(
-                        professor.photoUrl,
-                        width: 50,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            //todo cel object da se prakja
+                            builder: (context) => ProfessorDetailScreen(professor),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: Image.network(
+                          professor.photoUrl,
+                          width: 50,
+                        ),
+                        title: Text(professor.fullName),
                       ),
-                      title: Text(professor.fullName),
                     );
                   },
                 ),
