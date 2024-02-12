@@ -13,11 +13,11 @@ class SubjectsScreen extends StatefulWidget {
 
 class _SubjectsScreenState extends State<SubjectsScreen> {
   List<String> subjects = [];
+  List<String> filteredSubjects = [];
 
   @override
   void initState() {
     super.initState();
-
     getAllSubjects();
   }
 
@@ -26,7 +26,8 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
 
-    final specificTrElements = html.querySelectorAll('#\31 059818312 > div > table > tbody > tr:nth-child(3)');
+    final specificTrElements =
+    html.querySelectorAll('#\31 059818312 > div > table > tbody > tr:nth-child(3)');
 
     final allSubjects = specificTrElements
         .map((trElement) => trElement.querySelector('td.s3')?.innerHtml?.trim())
@@ -34,65 +35,59 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
         .toSet()
         .toList();
 
-
-    allSubjects.sort((a, b) {
-      if (a == null && b == null) {
-        return 0;
-      } else if (a == null) {
-        return 1;
-      } else if (b == null) {
-        return -1;
-      } else {
-        return a.compareTo(b);
-      }
-    });
+    allSubjects.sort((a, b) => a?.compareTo(b!) ?? 0);
 
     setState(() {
       subjects = List.generate(
-          allSubjects.length,
-              (index) => allSubjects[index].toString()
+        allSubjects.length,
+            (index) => allSubjects[index].toString(),
       );
+      filteredSubjects = List.from(subjects);
     });
-
   }
 
+  void filterSubjects(String query) {
+    setState(() {
+      filteredSubjects = subjects
+          .where((subject) => subject.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('All Subjects'),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search subject...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  // Implement search functionality here
-                },
+      appBar: AppBar(
+        title: const Text('All Subjects'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search subject...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
+              onChanged: filterSubjects,
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: subjects.length,
-                itemBuilder: (context, index) {
-                  final subject = subjects[index];
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: filteredSubjects.length,
+              itemBuilder: (context, index) {
+                final subject = filteredSubjects[index];
 
-                  return ListTile(
-                    title: Text('${++index}: $subject'),
-                  );
-                },
-              ),
+                return ListTile(
+                  title: Text('${++index}: $subject'),
+                );
+              },
             ),
-          ],
-        )
+          ),
+        ],
+      ),
     );
   }
 }

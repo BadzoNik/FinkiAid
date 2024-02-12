@@ -21,6 +21,7 @@ class ProfessorsScreen extends StatefulWidget {
 class _ProfessorsScreenState extends State<ProfessorsScreen> {
 
   List<Professor> professors = [];
+  List<Professor> filteredProfessors = [];
 
   @override
   void initState() {
@@ -52,8 +53,17 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
                   photoUrl: allProfessorsImageUrls[index].toString()
               )
       );
+      filteredProfessors = List.from(professors);
     });
-    
+
+  }
+
+  void filterProfessors(String query) {
+    setState(() {
+      filteredProfessors = professors
+          .where((professor) => professor.fullName.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -73,17 +83,16 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (value) {
+                  onChanged:filterProfessors,
                     // Implement search functionality here
-                  },
                 ),
               ),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(12),
-                  itemCount: professors.length,
+                  itemCount: filteredProfessors.length,
                   itemBuilder: (context, index) {
-                    final professor = professors[index];
+                    final professor = filteredProfessors[index];
 
                     return ListTile(
                       leading: Image.network(
