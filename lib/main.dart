@@ -1,8 +1,8 @@
-import 'package:finkiaid/ProfessorsScreen.dart';
+import 'package:finkiaid/professor/ProfessorsScreen.dart';
 import 'package:finkiaid/ProfileScreen.dart';
-import 'package:finkiaid/SubjectsScreen.dart';
 import 'package:finkiaid/firebase_auth/LoginScreen.dart';
 import 'package:finkiaid/firebase_auth/RegisterScreen.dart';
+import 'package:finkiaid/subject/SubjectsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_auth/firebase_options.dart';
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         '/professors': (BuildContext context) => ProfessorsScreen(),
         '/profile': (BuildContext context) => ProfileScreen(),
         '/login': (BuildContext context) => LoginScreen(),
-        '/register': (BuildContext context) => RegisterScreen()
+        '/register': (BuildContext context) => RegisterScreen(),
       },
     );
   }
