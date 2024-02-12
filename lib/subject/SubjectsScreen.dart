@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finkiaid/repository/SubjectsRepository.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/dom.dart' as dom;
 
-import 'ExternalLinks.dart';
+import '../ExternalLinks.dart';
+import 'SubjectDetailScreen.dart';
 
 class SubjectsScreen extends StatefulWidget {
   const SubjectsScreen({super.key});
@@ -18,42 +19,15 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   void initState() {
     super.initState();
 
-    getAllSubjects();
+    fetchSubjects();
   }
 
-  Future<void> getAllSubjects() async {
-    final url = Uri.parse(Links.SUBJECTS_LINK);
-    final response = await http.get(url);
-    dom.Document html = dom.Document.html(response.body);
-
-    final specificTrElements = html.querySelectorAll('#\31 059818312 > div > table > tbody > tr:nth-child(3)');
-
-    final allSubjects = specificTrElements
-        .map((trElement) => trElement.querySelector('td.s3')?.innerHtml?.trim())
-        .where((subject) => subject != null)
-        .toSet()
-        .toList();
-
-
-    allSubjects.sort((a, b) {
-      if (a == null && b == null) {
-        return 0;
-      } else if (a == null) {
-        return 1;
-      } else if (b == null) {
-        return -1;
-      } else {
-        return a.compareTo(b);
-      }
-    });
-
+  Future<void> fetchSubjects() async {
+    final repository = SubjectsRepository();
+    await repository.checkSubjectsInDatabase();
     setState(() {
-      subjects = List.generate(
-          allSubjects.length,
-              (index) => allSubjects[index].toString()
-      );
+      subjects = repository.subjects;
     });
-
   }
 
 
@@ -85,8 +59,19 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                 itemBuilder: (context, index) {
                   final subject = subjects[index];
 
-                  return ListTile(
-                    title: Text('${++index}: $subject'),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          //todo cel object da se prakja??
+                          builder: (context) => SubjectDetailScreen(subject),
+                        ),
+                      );
+                    },
+                    child: ListTile(
+                      title: Text('${++index}: $subject'),
+                    ),
                   );
                 },
               ),

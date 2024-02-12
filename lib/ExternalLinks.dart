@@ -1,6 +1,5 @@
 
-import 'package:finkiaid/ProfessorsScreen.dart';
-import 'package:finkiaid/SubjectsScreen.dart';
+import 'package:finkiaid/professor/ProfessorsScreen.dart';
 
 class Links {
   static String PROFESSORS_LINK

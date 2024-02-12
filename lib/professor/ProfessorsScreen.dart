@@ -1,15 +1,9 @@
+import 'package:finkiaid/repository/ProfessorsRepository.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/dom.dart' as dom;
+import '../model/Professor.dart';
+import 'ProfessorDetailScreen.dart';
 
-import 'ExternalLinks.dart';
 
-class Professor {
-  final String fullName;
-  final String photoUrl;
-
-  const Professor({required this.fullName, required this.photoUrl});
-}
 
 class ProfessorsScreen extends StatefulWidget {
   const ProfessorsScreen({super.key});
@@ -25,36 +19,19 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
   @override
   void initState() {
     super.initState();
-
-    getAllProfessors();
+    fetchProfessors();
   }
 
-  Future<void> getAllProfessors() async {
-    final url =
-        Uri.parse(Links.PROFESSORS_LINK);
-    final response = await http.get(url);
-    dom.Document html = dom.Document.html(response.body);
-
-    final allProfessorsFullNames = html
-        .querySelectorAll('h2 > a')
-        .map((element) => element.innerHtml.trim())
-        .toList();
-    final allProfessorsImageUrls = html
-        .querySelectorAll('div > div > div > div > img')
-        .map((element) => element.attributes['src']!)
-        .toList();
-
+  Future<void> fetchProfessors() async {
+    final repository = ProfessorsRepository();
+    await repository.checkProfessorsInDatabase();
     setState(() {
-      professors = List.generate(
-          allProfessorsFullNames.length,
-              (index) => Professor(
-                  fullName: allProfessorsFullNames[index].toString(),
-                  photoUrl: allProfessorsImageUrls[index].toString()
-              )
-      );
+      professors = repository.professors;
     });
-    
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +62,23 @@ class _ProfessorsScreenState extends State<ProfessorsScreen> {
                   itemBuilder: (context, index) {
                     final professor = professors[index];
 
-                    return ListTile(
-                      leading: Image.network(
-                        professor.photoUrl,
-                        width: 50,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            //todo cel object da se prakja
+                            builder: (context) => ProfessorDetailScreen(professor),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: Image.network(
+                          professor.photoUrl,
+                          width: 50,
+                        ),
+                        title: Text(professor.fullName),
                       ),
-                      title: Text(professor.fullName),
                     );
                   },
                 ),
