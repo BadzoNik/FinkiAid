@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:uuid/uuid.dart';
 
 import '../model/UserFinki.dart';
 
@@ -16,7 +17,9 @@ class UserManagement {
       return;
     }
 
-    await FirebaseFirestore.instance.collection('users').add({
+    final userDoc = FirebaseFirestore.instance.collection('users').doc();
+    await userDoc.set({
+      'id': user.id,
       'name': user.name,
       'surname': user.surname,
       'email': user.email,

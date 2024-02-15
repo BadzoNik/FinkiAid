@@ -5,6 +5,7 @@ enum UserRole {
 }
 
 class UserFinki {
+  final String id;
   final String name;
   final String surname;
   final String email;
@@ -12,6 +13,7 @@ class UserFinki {
   final UserRole userRole;
 
   UserFinki({
+    required this.id,
     required this.name,
     required this.surname,
     required this.email,

@@ -33,19 +33,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
       _errorMessage = '';
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/home');
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message!;
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -120,8 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () async {
                               signInWithGoogle();
                             },
-                            icon: Image.asset(
-                                "assets/google_img.png",
+                            icon: Image.asset("assets/google_img.png",
                                 height: 24),
                             label: const Text("Login via Google"),
                           ),
@@ -136,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             MaterialPageRoute(
                               builder: (context) => const RegisterScreen(),
                             ),
-                            (route) => route.isFirst);
+                                (route) => route.isFirst);
                       },
                       child: const Text("Register"),
                     )
@@ -164,26 +159,34 @@ class _LoginScreenState extends State<LoginScreen> {
     // Extract user information
     final User? user = userCredential.user;
     final String? displayName = user?.displayName;
-    final String? email = user?.email;
+    final String? _email = user?.email;
 
-    if (user != null && email != null && displayName != null) {
+    if (user != null && _email != null && displayName != null) {
       List<String> nameParts = displayName.split(' ');
-      String firstName = nameParts.first;
-      String lastName = nameParts.length > 1 ? nameParts.last : '';
+      String _name = nameParts.first;
+      String _surname = nameParts.length > 1 ? nameParts.last : '';
 
-      if(nameParts.length == 0) {
-        firstName = displayName;
-        lastName = "";
+      if (nameParts.length == 0) {
+        _name = displayName;
+        _surname = "";
       }
 
-      UserManagement().storeNewUser(UserFinki(
-        name: firstName,
-        surname: lastName,
-        email: email,
-        password: '',
-          userRole: UserRole.user
-      ), context);
-    }
+      UserFinki user = UserFinki(id: userCredential.user!.uid,
+          name: _name,
+          surname: _surname,
+          email: _email,
+          password: '',
+          userRole: UserRole.user);
 
+      UserManagement().storeNewUser(user, context);
+
+      // UserManagement().storeNewUser(UserFinki(
+      //   name: firstName,
+      //   surname: lastName,
+      //   email: email,
+      //   password: '',
+      //     userRole: UserRole.user
+      // ), context);
+    }
   }
 }

@@ -159,6 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               password: _password)
                               .then((signedInUser) {
                             UserFinki user = UserFinki(
+                              id: signedInUser.user!.uid,
                               name: _name,
                               surname: _surname,
                               email: _email,
@@ -167,6 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             );
 
                             UserManagement().storeNewUser(user, context);
+
                           })
                           .catchError((e) {
                             print(e);

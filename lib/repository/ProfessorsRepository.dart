@@ -13,9 +13,16 @@ class ProfessorsRepository {
     if (snapshot.docs.isNotEmpty) {
       professors = snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
+        final List<dynamic> ratingsData = data['ratings'];
+        final List<int> ratings = ratingsData.map((dynamic rating) => rating as int).toList();
+        final List<dynamic> commentsData = data['comments'];
+        final List<String> comments = commentsData.map((dynamic comment) => comment as String).toList();
         return Professor(
+          id: doc.id,
           fullName: data['fullName'],
           photoUrl: data['photoUrl'],
+          ratings: ratings,
+          comments: comments,
         );
       }).toList();
     } else {
@@ -39,9 +46,18 @@ class ProfessorsRepository {
 
     professors = List.generate(
         allProfessorsFullNames.length,
-        (index) => Professor(
+            (index) {
+          final professorRef = FirebaseFirestore.instance.collection('professors').doc();
+          return Professor(
+            id: professorRef.id,
             fullName: allProfessorsFullNames[index].toString(),
-            photoUrl: allProfessorsImageUrls[index].toString()));
+            photoUrl: allProfessorsImageUrls[index].toString(),
+            ratings:  <int>[],
+            comments: <String>[],
+          );
+        }
+    );
+
 
     await storeProfessorsInDatabase();
   }
@@ -54,6 +70,9 @@ class ProfessorsRepository {
       batch.set(professorRef, {
         'fullName': professor.fullName,
         'photoUrl': professor.photoUrl,
+        'ratings': professor.ratings,
+        'comments': professor.comments,
+        'id': professor.id,
       });
     }
     await batch.commit();

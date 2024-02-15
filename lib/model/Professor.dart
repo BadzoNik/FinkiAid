@@ -1,10 +1,15 @@
-
 class Professor {
+  final String id;
   final String fullName;
   final String photoUrl;
+  final List<int> ratings;
+  final List<String> comments;
 
-  //final List<int> rations = [];
-  //final List<String> comments = [];
-
-  const Professor({required this.fullName, required this.photoUrl});
+  Professor({
+    required this.id,
+    required this.fullName,
+    required this.photoUrl,
+    required this.ratings,
+    required this.comments,
+  });
 }
