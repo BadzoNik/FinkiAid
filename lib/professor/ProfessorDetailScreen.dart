@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finkiaid/model/UserFinki.dart';
+import 'package:finkiaid/notifications/Notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +165,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
         setState(() {
           allComments.add(commentMap);
         });
-        _showPopUpMessage(context, 'Comment submitted successfully!');
+        Notifications.showPopUpMessage(context, 'Comment submitted successfully!');
       } else {
         print('User not logged in');
       }
@@ -204,7 +206,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
             comments.removeWhere((comment) => comment == userComment);
             await professorDoc.update({'comments': comments});
 
-            _showPopUpMessage(context, 'Comment removed successfully!');
+            Notifications.showPopUpMessage(context, 'Comment removed successfully!');
           }
 
           setState(() {
@@ -240,7 +242,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
                     bool currentUserIsCommenter = comment['userId'] ==
                         FirebaseAuth.instance.currentUser?.uid;
-                    bool currentUserIsAdmin = await _checkCurrentUserIsAdmin();
+                    bool currentUserIsAdmin = await UserFinki.checkCurrentUserIsAdmin();
 
                     return ListTile(
                       title: Text(userName),
@@ -302,34 +304,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     );
   }
 
-  Future<bool> _checkCurrentUserIsAdmin() async {
-    try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('id', isEqualTo: currentUser.uid)
-            .limit(1)
-            .get();
 
-        if (querySnapshot.docs.isNotEmpty) {
-          final userData =
-              querySnapshot.docs.first.data() as Map<String, dynamic>;
-          final userRole = userData['role'];
-          return userRole == "admin";
-        } else {
-          print('User document not found');
-          return false;
-        }
-      } else {
-        print('No user is currently logged in');
-        return false;
-      }
-    } catch (error) {
-      print('Error fetching user document: $error');
-      return false;
-    }
-  }
 
   void _getAllRatings() async {
     try {
@@ -418,7 +393,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
             await professorDoc.update({'ratings': ratings});
           }
 
-          _showPopUpMessage(context, 'Rating submitted successfully!');
+          Notifications.showPopUpMessage(context, 'Rating submitted successfully!');
 
           setState(() {
             alreadyRated = true;
@@ -478,7 +453,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
               _calculateAverageRating();
             });
 
-            _showPopUpMessage(context, 'Rating removed successfully!');
+            Notifications.showPopUpMessage(context, 'Rating removed successfully!');
           }
         }
       } else {
@@ -553,18 +528,3 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
   }
 }
 
-void _showPopUpMessage(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.only(top: 16),
-      content: Row(
-        children: [
-          Icon(Icons.check_circle, color: Colors.green),
-          SizedBox(width: 8),
-          Text(message),
-        ],
-      ),
-    ),
-  );
-}

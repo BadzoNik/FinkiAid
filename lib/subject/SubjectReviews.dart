@@ -1,8 +1,9 @@
 
+import 'package:finkiaid/model/Subject.dart';
 import 'package:flutter/cupertino.dart';
 
 class SubjectReviews extends StatelessWidget {
-  final String subject;
+  final Subject subject;
 
   const SubjectReviews(this.subject, {super.key});
 

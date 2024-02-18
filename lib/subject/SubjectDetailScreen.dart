@@ -1,3 +1,4 @@
+import 'package:finkiaid/model/Subject.dart';
 import 'package:flutter/material.dart';
 
 import 'SubjectExamSessions.dart';
@@ -5,7 +6,7 @@ import 'SubjectMidTerms.dart';
 import 'SubjectReviews.dart';
 
 class SubjectDetailScreen extends StatelessWidget {
-  final String subject;
+  final Subject subject;
 
   const SubjectDetailScreen(this.subject, {super.key});
 
@@ -13,7 +14,7 @@ class SubjectDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subject: $subject'),
+        title: Text(subject.name),
       ),
       body: Center(
         child: Column(
