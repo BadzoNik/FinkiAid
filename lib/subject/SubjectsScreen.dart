@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
 import '../ExternalLinks.dart';
+import '../model/Subject.dart';
 import '../repository/SubjectsRepository.dart';
 import 'SubjectDetailScreen.dart';
 
@@ -14,8 +15,8 @@ class SubjectsScreen extends StatefulWidget {
 }
 
 class _SubjectsScreenState extends State<SubjectsScreen> {
-  List<String> subjects = [];
-  List<String> filteredSubjects = [];
+  List<Subject> subjects = [];
+  List<Subject> filteredSubjects = [];
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   void filterSubjects(String query) {
     setState(() {
       filteredSubjects = subjects
-          .where((subject) => subject.toLowerCase().contains(query.toLowerCase()))
+          .where((subject) => subject.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -75,7 +76,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                     );
                   },
                   child: ListTile(
-                    title: Text('${++index}: $subject'),
+                    title: Text('${++index}: ${subject.name}'),
                   ),
                 );
               },

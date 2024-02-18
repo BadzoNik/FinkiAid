@@ -40,6 +40,9 @@ dependencies:
   google_sign_in: ^6.1.6
   cloud_firestore:
   uuid:
+  image_picker: ^1.0.7
+  image_cropper:
+  permission_handler:
 
 dev_dependencies:
   flutter_test:
