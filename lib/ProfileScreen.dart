@@ -1,5 +1,6 @@
-import 'package:finkiaid/HomePage.dart';
+
 import 'package:finkiaid/firebase_auth/LoginScreen.dart';
+import 'package:finkiaid/HomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

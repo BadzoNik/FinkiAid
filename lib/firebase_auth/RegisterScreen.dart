@@ -1,10 +1,10 @@
-import 'package:finkiaid/HomePage.dart';
-import 'package:finkiaid/firebase_auth/Validations.dart';
-import 'package:finkiaid/service/user_management.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:finkiaid/service/user_management.dart';
+import 'package:finkiaid/firebase_auth/Validations.dart';
+import 'package:finkiaid/model/UserFinki.dart';
 
-import '../model/UserFinki.dart';
 import 'LoginScreen.dart';
 
 
