@@ -5,7 +5,7 @@ enum ExamSessionTypeImage { january, june, august }
 class Subject {
   final String id;
   final String name;
-  final Map<dynamic, List<String>> images;
+  Map<dynamic, List<dynamic>> images;
   final List<String> comments;
 
   Subject(
@@ -13,4 +13,8 @@ class Subject {
       required this.name,
       required this.images,
       required this.comments});
+
+  void setImages(Map<dynamic, List<dynamic>> newImages) {
+    images = newImages;
+  }
 }
