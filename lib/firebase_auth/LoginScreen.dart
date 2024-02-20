@@ -1,6 +1,5 @@
-
-import 'package:finkiaid/firebase_auth/RegisterScreen.dart';
 import 'package:finkiaid/HomePage.dart';
+import 'package:finkiaid/firebase_auth/RegisterScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,112 +33,142 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text);
       _errorMessage = '';
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/home');
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message!;
     }
-    setState(() {});
+    setState(() {
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
+        backgroundColor: Colors.cyan.shade200,
+        title: const Text(''),
       ),
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.cyan.shade200, Colors.blue.shade500],
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Email",
-                  ),
-                  validator: Validations.validateEmail,
-                  onChanged: (value) {
-                    setState(() {
-                      _email = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Password",
-                  ),
-                  validator: Validations.validatePassword,
-                  onChanged: (value) {
-                    setState(() {
-                      _password = value;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
+          child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Center(
-                      child: Text(_errorMessage,
-                          style: const TextStyle(color: Colors.red)),
+                    // Add the icon here
+                    Icon(
+                      Icons.people,
+                      size: 80,
+                      color: Colors.white,
                     ),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              //back stack na activities !!
-                              if (_formKey.currentState!.validate()) {
-                                _handleLogin();
-                              }
-                            },
-                            child: Text("Login"),
-                          ),
-                          SizedBox(width: 10), // Add space between buttons
-                          Text('or'),
-                          SizedBox(width: 10), // Add space between buttons
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              signInWithGoogle();
-                            },
-                            icon: Image.asset("assets/google_img.png",
-                                height: 24),
-                            label: const Text("Login via Google"),
-                          ),
-                        ],
+                    const SizedBox(height: 70),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(),
+                        labelText: "Email",
                       ),
-                    ),
-                    const Text('Do not have an account yet? Register!'),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                                (route) => route.isFirst);
+                      validator: Validations.validateEmail,
+                      onChanged: (value) {
+                        setState(() {
+                          _email = value;
+                        });
                       },
-                      child: const Text("Register"),
-                    )
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(),
+                        labelText: "Password",
+                      ),
+                      validator: Validations.validatePassword,
+                      onChanged: (value) {
+                        setState(() {
+                          _password = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      children: [
+                        Center(
+                          child: Text(_errorMessage,
+                              style: const TextStyle(color: Colors.red)),
+                        ),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  //back stack na activities !!
+                                  if (_formKey.currentState!.validate()) {
+                                    _handleLogin();
+                                  }
+                                },
+                                child: Text("Login"),
+                              ),
+                              SizedBox(width: 10), // Add space between buttons
+                              Text('or'),
+                              SizedBox(width: 10), // Add space between buttons
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  signInWithGoogle();
+                                },
+                                icon: Image.asset(
+                                  "assets/google_img.png",
+                                  height: 24,
+                                ),
+                                label: const Text("Login via Google"),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Text('Do not have an account yet? Register!'),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterScreen(),
+                              ),
+                                  (route) => route.isFirst,
+                            );
+                          },
+                          child: const Text("Register"),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
