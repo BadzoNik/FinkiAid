@@ -130,7 +130,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
         if (usersSnapshot.docs.isNotEmpty) {
           final userData =
-              usersSnapshot.docs.first.data() as Map<String, dynamic>;
+          usersSnapshot.docs.first.data() as Map<String, dynamic>;
           userName = '${userData['name']} ${userData['surname']}';
         }
 
@@ -152,7 +152,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
         if (professorSnapshot.exists) {
           final professorData =
-              professorSnapshot.data() as Map<String, dynamic>;
+          professorSnapshot.data() as Map<String, dynamic>;
           final List<dynamic> comments = professorData['comments'] ?? [];
           comments.add(commentText);
           await professorDoc.update({'comments': comments});
@@ -165,7 +165,8 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
         setState(() {
           allComments.add(commentMap);
         });
-        Notifications.showPopUpMessage(context, 'Comment submitted successfully!');
+        Notifications.showPopUpMessage(
+            context, 'Comment submitted successfully!');
       } else {
         print('User not logged in');
       }
@@ -174,8 +175,8 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     }
   }
 
-  void _removeComment(
-      var commentTimestamp, String userComment, StateSetter setState) async {
+  void _removeComment(var commentTimestamp, String userComment,
+      StateSetter setState) async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -201,17 +202,18 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
           if (professorSnapshot.exists) {
             final professorData =
-                professorSnapshot.data() as Map<String, dynamic>;
+            professorSnapshot.data() as Map<String, dynamic>;
             final List<dynamic> comments = professorData['comments'] ?? [];
             comments.removeWhere((comment) => comment == userComment);
             await professorDoc.update({'comments': comments});
 
-            Notifications.showPopUpMessage(context, 'Comment removed successfully!');
+            Notifications.showPopUpMessage(
+                context, 'Comment removed successfully!');
           }
 
           setState(() {
             allComments.removeWhere((comment) =>
-                comment['timestamp'] == commentTimestamp &&
+            comment['timestamp'] == commentTimestamp &&
                 comment['comment'] == userComment);
           });
         }
@@ -242,22 +244,23 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
                     bool currentUserIsCommenter = comment['userId'] ==
                         FirebaseAuth.instance.currentUser?.uid;
-                    bool currentUserIsAdmin = await UserFinki.checkCurrentUserIsAdmin();
+                    bool currentUserIsAdmin = await UserFinki
+                        .checkCurrentUserIsAdmin();
 
                     return ListTile(
                       title: Text(userName),
                       subtitle: Text(userComment),
                       trailing: (currentUserIsCommenter || currentUserIsAdmin)
                           ? ElevatedButton(
-                              onPressed: () {
-                                _removeComment(comment['timestamp'],
-                                    userComment, setState);
-                              },
-                              child:
-                                  (currentUserIsCommenter || currentUserIsAdmin)
-                                      ? Text('Remove')
-                                      : null,
-                            )
+                        onPressed: () {
+                          _removeComment(comment['timestamp'],
+                              userComment, setState);
+                        },
+                        child:
+                        (currentUserIsCommenter || currentUserIsAdmin)
+                            ? Text('Remove')
+                            : null,
+                      )
                           : null,
                     );
                   }).toList()),
@@ -305,7 +308,6 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
   }
 
 
-
   void _getAllRatings() async {
     try {
       final professorDoc = FirebaseFirestore.instance
@@ -330,7 +332,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
   void _calculateAverageRating() {
     if (allRatings.isNotEmpty) {
       final totalRating =
-          allRatings.reduce((value, element) => value + element);
+      allRatings.reduce((value, element) => value + element);
       setState(() {
         averageRating = totalRating / allRatings.length;
       });
@@ -363,7 +365,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
           if (usersSnapshot.docs.isNotEmpty) {
             final userData =
-                usersSnapshot.docs.first.data() as Map<String, dynamic>;
+            usersSnapshot.docs.first.data() as Map<String, dynamic>;
             userName = '${userData['name']} ${userData['surname']}';
           }
 
@@ -387,13 +389,14 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
           if (professorSnapshot.exists) {
             final professorData =
-                professorSnapshot.data() as Map<String, dynamic>;
+            professorSnapshot.data() as Map<String, dynamic>;
             final List<dynamic> ratings = professorData['ratings'] ?? [];
             ratings.add(userRating);
             await professorDoc.update({'ratings': ratings});
           }
 
-          Notifications.showPopUpMessage(context, 'Rating submitted successfully!');
+          Notifications.showPopUpMessage(
+              context, 'Rating submitted successfully!');
 
           setState(() {
             alreadyRated = true;
@@ -444,7 +447,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
 
           if (professorSnapshot.exists) {
             final professorData =
-                professorSnapshot.data() as Map<String, dynamic>;
+            professorSnapshot.data() as Map<String, dynamic>;
             final List<dynamic> ratings = professorData['ratings'] ?? [];
             ratings.remove(userRating);
             await professorDoc.update({'ratings': ratings});
@@ -453,7 +456,8 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
               _calculateAverageRating();
             });
 
-            Notifications.showPopUpMessage(context, 'Rating removed successfully!');
+            Notifications.showPopUpMessage(
+                context, 'Rating removed successfully!');
           }
         }
       } else {
@@ -469,62 +473,118 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.professor.fullName),
+        backgroundColor: Colors.cyan.shade200,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            const Text('Add rating'),
-            Center(
-              child: Image.network(
-                widget.professor.photoUrl.toString(),
-                width: 50,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                (index) => IconButton(
-                  icon: Icon(
-                    index < userRating ? Icons.star : Icons.star_border,
-                    color: index < userRating ? Colors.green : Colors.grey,
-                  ),
-                  onPressed: () {
-                    if (!alreadyRated) {
-                      _updateRating(index + 1);
-                    }
-                  },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.cyan.shade200, Colors.blue.shade500],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Add Rating',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ),
-            Text('Average rating: ${averageRating.toStringAsFixed(2)}'),
-            if (alreadyRated)
-              TextButton(
+              SizedBox(height: 16),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2.0,
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 80,
+                  backgroundImage: NetworkImage(
+                    widget.professor.photoUrl.toString(),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                      (index) =>
+                      IconButton(
+                        icon: Icon(
+                          index < userRating ? Icons.star : Icons.star_border,
+                          color: index < userRating ? Colors.yellow : Colors
+                              .grey,
+                          size: 32,
+                        ),
+                        onPressed: () {
+                          if (!alreadyRated) {
+                            _updateRating(index + 1);
+                          }
+                        },
+                      ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Average Rating: ${averageRating.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 16),
+              if (alreadyRated)
+                ElevatedButton(
                   onPressed: () {
                     _removeRating();
                   },
-                  child: const Text('Remove rating')),
-            if (!alreadyRated)
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                    onPrimary: Colors.white,
+                  ),
+                  child: Text('Remove Rating'),
+                ),
+              if (!alreadyRated)
+                ElevatedButton(
+                  onPressed: () {
+                    if (isLoggedIn) {
+                      _submitRating();
+                    } else {
+                      Navigator.of(context).pushNamed('/login');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.blue,
+                  ),
+                  child: Text('Submit Rating'),
+                ),
+              SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  if (isLoggedIn) {
-                    _submitRating();
-                  } else {
-                    Navigator.of(context).pushNamed('/login');
-                  }
+                  _viewComments(context, widget, allComments);
                 },
-                child: const Text('Submit rating'),
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                ),
+                child: Text('View Comments'),
               ),
-            TextButton(
-              onPressed: () {
-                _viewComments(context, widget, allComments);
-              },
-              child: const Text('View Comments'),
-            ),
-          ],
+              SizedBox(height: 300),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
