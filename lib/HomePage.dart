@@ -59,8 +59,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).pushNamed('/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.white,
-                  onPrimary: Colors.blue,
+                  foregroundColor: Colors.blue, backgroundColor: Colors.white,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -105,8 +104,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context).pushNamed('/subjects');
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue,
+                      foregroundColor: Colors.blue, backgroundColor: Colors.white,
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -131,8 +129,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context).pushNamed('/professors');
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue,
+                      foregroundColor: Colors.blue, backgroundColor: Colors.white,
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -165,8 +162,7 @@ class _HomePageState extends State<HomePage> {
                       print('Favourites Button Pressed!');
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue, // Customize the color as needed
+                      foregroundColor: Colors.blue, backgroundColor: Colors.white, // Customize the color as needed
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),

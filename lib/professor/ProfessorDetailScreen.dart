@@ -550,8 +550,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                     _removeRating();
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Colors.red,
                   ),
                   child: Text('Remove Rating'),
                 ),
@@ -565,8 +564,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    onPrimary: Colors.blue,
+                    foregroundColor: Colors.blue, backgroundColor: Colors.white,
                   ),
                   child: Text('Submit Rating'),
                 ),
@@ -576,7 +574,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   _viewComments(context, widget, allComments);
                 },
                 style: TextButton.styleFrom(
-                  primary: Colors.white,
+                  foregroundColor: Colors.white,
                 ),
                 child: Text('View Comments'),
               ),

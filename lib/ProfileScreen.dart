@@ -54,8 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.of(context).pushNamed('/login');
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    onPrimary: Colors.blue,
+                    foregroundColor: Colors.blue, backgroundColor: Colors.white,
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
