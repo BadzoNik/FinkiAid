@@ -50,7 +50,7 @@ class SubjectDetailScreen extends StatelessWidget {
                       )
                   );
                 },
-                child: const Text('Reviews')
+                child: const Text('View Comments')
             )
           ],
         ),

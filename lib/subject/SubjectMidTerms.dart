@@ -1,12 +1,17 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:finkiaid/model/Subject.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path/path.dart' as Path;
 
 import '../model/UserFinki.dart';
 import '../notifications/Notifications.dart';
@@ -22,31 +27,100 @@ class SubjectMidTerms extends StatefulWidget {
 
 class _SubjectMidTermsState extends State<SubjectMidTerms> {
   List<Map<String, dynamic>> allImages = [];
-  MidTermTypeImage? selectedType;
+  MidTermTypeImage? selectedMidTermType;
   bool isLoggedIn = false;
   bool currentUserIsAdmin = false;
+  CollectionReference? imgRef;
+  firebase_storage.Reference? ref;
+  String? lastUploadedImageWithDownloadableURL;
+
+  @override
+  void dispose() {
+    FirebaseAuth.instance.authStateChanges().listen(null);
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
     _updateAuthState();
+    _checkUserIsAdmin();
     _getAllImages();
+    // _getAllImages2();
+    imgRef = FirebaseFirestore.instance.collection('imageURLs');
+  }
+
+  void _checkUserIsAdmin() async {
+    bool isAdmin = await UserFinki.checkCurrentUserIsAdmin();
+
+    setState(() {
+      currentUserIsAdmin = isAdmin;
+    });
   }
 
   void _updateAuthState() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      setState(() async {
-        isLoggedIn = user != null;
-        currentUserIsAdmin = await UserFinki.checkCurrentUserIsAdmin();
+    FirebaseAuth.instance.authStateChanges().listen((User? user)  {
+      bool loggedIn = user != null;
+
+      setState(() {
+        isLoggedIn = loggedIn;
       });
     });
   }
 
+
+  void _getAllImages2() async {
+    String folderName = '';
+    if (selectedMidTermType == MidTermTypeImage.first) {
+      folderName = 'MidTerm-first';
+    } else if (selectedMidTermType == MidTermTypeImage.second) {
+      folderName = 'MidTerm-second';
+    } else {
+      return;
+    }
+
+    firebase_storage.Reference folderRef =
+          firebase_storage.FirebaseStorage
+              .instance.ref().child('images/$folderName');
+
+    try {
+      firebase_storage.ListResult result = await folderRef.listAll();
+      List<Map<String, String>> images = [];
+
+      for (firebase_storage.Reference ref in result.items) {
+        String downloadURL = await ref.getDownloadURL();
+
+        Map<String, String> imageMap = {
+
+          'imageUrl': downloadURL,
+          'imageType': folderName,
+        };
+
+        images.add(imageMap);
+      }
+
+      setState(() {
+        allImages = images;
+      });
+    } catch (error) {
+      // Handle any errors that occur during the retrieval process
+      print('Error retrieving images: $error');
+    }
+  }
+
+
+
   void _getAllImages() async {
     try {
+      final List<String> midTermTypes = [
+        for (var type in widget.subject.images.keys)
+          if (type.toString().contains("MidTerm")) type
+      ];
+
       final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('subjectImages')
           .where("subjectName", isEqualTo: widget.subject.name)
+          .where("imageType", whereIn: midTermTypes)
           .get();
       List<Map<String, String>> images = [];
 
@@ -126,7 +200,8 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
         }
 
         final String imageUrl = image.path;
-        final String imageTypeKey = _getImageTypeKey(selectedType);
+        final String imageTypeKey = _getImageTypeKey(selectedMidTermType);
+
 
         Map<String, dynamic> midTermImageData = {
           'subjectId': widget.subject.id,
@@ -134,7 +209,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
           'userId': userId,
           'userName': userName,
           'userEmail': userEmail,
-          'imageUrl': imageUrl,
+          'imageUrl': lastUploadedImageWithDownloadableURL,
           'imageType': imageTypeKey,
           'timestamp': DateTime.now().toString(),
         };
@@ -151,9 +226,9 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
           Map<String, dynamic> images = subjectData["images"] ?? {};
 
           if (images.containsKey(imageTypeKey)) {
-            images[imageTypeKey]!.add(imageUrl);
+            images[imageTypeKey]!.add(lastUploadedImageWithDownloadableURL);
           } else {
-            images[imageTypeKey] = [imageUrl];
+            images[imageTypeKey] = [lastUploadedImageWithDownloadableURL];
           }
 
           await subjectDoc.update({'images': images});
@@ -163,9 +238,14 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
             .collection('subjectImages')
             .add(imageMap);
 
+        // Map<dynamic, List<String>> newImages =
+        //     Subject.convertToImagesMap(midTermImageData);
+        _fetchImagesFromFirebase();
         setState(() {
           allImages.add(imageMap);
+          // widget.subject.setImages(newImages);
         });
+        Notifications.showPopUpMessage(context, 'Successfully uploaded image');
       } else {
         print('addImage(): User not logged in');
       }
@@ -174,19 +254,46 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     }
   }
 
+
+  void _fetchImagesFromFirebase() async {
+    try {
+      // Query the subjects collection for the document with the specified subject ID
+      final DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('subjects')
+          .doc(widget.subject.id)
+          .get();
+
+      // Check if the document exists
+      if (documentSnapshot.exists) {
+        // Extract the images field from the document
+        Map<String, List<dynamic>> images =
+            Map.from(documentSnapshot.get('images'));
+
+        // Update the state with the fetched images
+        setState(() {
+          widget.subject.setImages(images);
+        });
+      } else {
+        print('Document does not exist for subject ID: ${widget.subject.id}');
+      }
+    } catch (error) {
+      print('Error fetching images from Firebase: $error');
+    }
+  }
+
   String _getImageTypeKey(dynamic type) {
     if (type is MidTermTypeImage) {
       return type == MidTermTypeImage.first
-          ? 'MidTerm - first'
-          : 'MidTerm - second';
+          ? 'MidTerm-first'
+          : 'MidTerm-second';
     } else if (type is ExamSessionTypeImage) {
       switch (type) {
         case ExamSessionTypeImage.january:
-          return 'ExamSession - january';
+          return 'ExamSession-January';
         case ExamSessionTypeImage.june:
-          return 'ExamSession - june';
+          return 'ExamSession-June';
         case ExamSessionTypeImage.august:
-          return 'ExamSession - august';
+          return 'ExamSession-August';
       }
     }
     throw Exception('Invalid image type');
@@ -235,6 +342,8 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                   context, 'Image removed successfully!');
             }
           }
+          deleteImageFromFirebaseStorage(imageType, userImage);
+
 
           setState(() {
             allImages.removeWhere((image) =>
@@ -251,6 +360,31 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     }
   }
 
+  Future<void> deleteImageFromFirebaseStorage(String imageType, String userImage) async {
+    String cleanedImageType = imageType.replaceAll(' - ', '-');
+
+    Uri uri = Uri.parse(userImage);
+    String imageUri = uri.pathSegments.last;
+    String imageName = imageUri.split("/")[2];
+    firebase_storage.Reference folderRef =
+    firebase_storage.FirebaseStorage.instance.ref().child('images/$cleanedImageType');
+
+    try {
+      firebase_storage.ListResult result = await folderRef.listAll();
+      for (firebase_storage.Reference ref in result.items) {
+        print('Item name: ${ref.name}');
+
+        if (ref.name == imageName) {
+          await ref.delete();
+          print('Image ${ref.name} deleted successfully.');
+        }
+      }
+    } catch (error) {
+      print('Error retrieving data: $error');
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,6 +394,12 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            if(pickedFile != null)
+              Image.file(
+                File(pickedFile!.path!),
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -279,12 +419,27 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                     children: [
                       ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
-                          child: Image.file(
-                            File(allImages[index]['imageUrl']),
+                          child: Image.network(
+                            allImages[index]['imageUrl'],
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
-                          )),
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              }
+                            },
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              return Text('Error loading image');
+                            },
+                          ),
+                      ),
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -351,11 +506,11 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                 child: Column(
                   children: [
                     DropdownButton<MidTermTypeImage>(
-                      value: selectedType,
+                      value: selectedMidTermType,
                       hint: const Text('Select which Mid Term'),
                       onChanged: (MidTermTypeImage? newValue) {
                         setState(() {
-                          selectedType = newValue;
+                          selectedMidTermType = newValue;
                         });
                       },
                       items:
@@ -384,7 +539,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                               ],
                             ),
                             onTap: () {
-                              if (selectedType != null) {
+                              if (selectedMidTermType != null) {
                                 _imgFromGallery();
                                 Navigator.pop(context);
                               }
@@ -408,7 +563,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                               ),
                             ),
                             onTap: () {
-                              if (selectedType != null) {
+                              if (selectedMidTermType != null) {
                                 _imgFromCamera();
                                 Navigator.pop(context);
                               }
@@ -428,6 +583,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     );
   }
 
+  PlatformFile? pickedFile;
   _imgFromGallery() async {
     await picker
         .pickImage(
@@ -439,6 +595,11 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
         _cropImage(File(value.path));
       }
     });
+    // final result = await FilePicker.platform.pickFiles();
+    // if(result == null) return;
+    // setState(() {
+    //   pickedFile = result.files.first;
+    // });
   }
 
   _imgFromCamera() async {
@@ -454,9 +615,24 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     });
   }
 
-  _cropImage(File imgFile) async {
+  // PlatformFile fileToPlatformFile(File file) {
+  //   String path = file.path;
+  //   String name = file.path.split('/').last; // Extract the file name from the path
+  //   int size = file.lengthSync();
+  //   ByteData byteData = file.readAsBytesSync().buffer.asByteData(); // Read file as bytes
+  //   List<int> bytes = byteData.buffer.asUint8List(); // Convert ByteData to Uint8List
+  //
+  //   return PlatformFile(
+  //     name: name,
+  //     path: path,
+  //     size: size,
+  //     bytes: bytes,
+  //   );
+  // }
+
+  _cropImage(File imgFile) async { //PlatformFile
     final croppedFile = await ImageCropper().cropImage(
-      sourcePath: imgFile.path,
+      sourcePath: imgFile!.path!,
       aspectRatioPresets: Platform.isAndroid
           ? [
               CropAspectRatioPreset.square,
@@ -489,8 +665,42 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
       ],
     );
     if (croppedFile != null) {
-      _addImage(File(croppedFile.path));
-      Notifications.showPopUpMessage(context, 'Successfully uploaded image');
+      _uploadImage(File(croppedFile.path));
     }
   }
+
+  void _uploadImage(File imageFile) async {
+    String folderName = '';
+    if (selectedMidTermType == MidTermTypeImage.first) {
+      folderName = 'MidTerm-first';
+    } else if (selectedMidTermType == MidTermTypeImage.second) {
+      folderName = 'MidTerm-second';
+    } else {
+      return;
+    }
+
+    ref = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('images/$folderName/${Path.basename(imageFile.path)}');
+
+    try {
+      // Upload image to Firebase Storage
+      await ref?.putFile(imageFile);
+
+      String downloadURL = await ref!.getDownloadURL();
+
+      // Add image URL to Firestore (unnecessary)
+      // await imgRef?.add({'url': downloadURL});
+
+      setState(() {
+        lastUploadedImageWithDownloadableURL = downloadURL;
+        //it must be here in order to have the `downloadURL` in `lastUploadedImageWithDownloadableURL`
+        //for adding the `lastUploadedImageWithDownloadableURL` inside firebase firestore
+        _addImage(imageFile);
+      });
+    } catch (error) {
+      print('Error uploading image: $error');
+    }
+  }
+
 }
