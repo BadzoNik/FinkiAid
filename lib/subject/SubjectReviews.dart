@@ -28,6 +28,7 @@ class _SubjectReviewsState extends State<SubjectReviews> {
   void initState() {
     super.initState();
     _updateAuthState();
+    _getAllComments();
   }
 
   void _updateAuthState() {
@@ -118,7 +119,7 @@ class _SubjectReviewsState extends State<SubjectReviews> {
 
         if (subjectSnapshot.exists) {
           final subjectData =
-            subjectSnapshot.data() as Map<String, dynamic>;
+          subjectSnapshot.data() as Map<String, dynamic>;
           final List<dynamic> comments = subjectData['comments'] ?? [];
           comments.add(commentText);
           await subjectDoc.update({'comments': comments});
@@ -131,7 +132,8 @@ class _SubjectReviewsState extends State<SubjectReviews> {
         setState(() {
           allComments.add(commentMap);
         });
-        Notifications.showPopUpMessage(context, 'Comment submitted successfully!');
+        Notifications.showPopUpMessage(
+            context, 'Comment submitted successfully!');
       } else {
         print('User not logged in');
       }
@@ -140,8 +142,8 @@ class _SubjectReviewsState extends State<SubjectReviews> {
     }
   }
 
-  void _removeComment(
-      var commentTimestamp, String userComment, StateSetter setState) async {
+  void _removeComment(var commentTimestamp, String userComment,
+      StateSetter setState) async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -167,12 +169,13 @@ class _SubjectReviewsState extends State<SubjectReviews> {
 
           if (subjectSnapshot.exists) {
             final subjectData =
-              subjectSnapshot.data() as Map<String, dynamic>;
+            subjectSnapshot.data() as Map<String, dynamic>;
             final List<dynamic> comments = subjectData['comments'] ?? [];
             comments.removeWhere((comment) => comment == userComment);
             await subjectDoc.update({'comments': comments});
 
-            Notifications.showPopUpMessage(context, 'Comment removed successfully!');
+            Notifications.showPopUpMessage(
+                context, 'Comment removed successfully!');
           }
 
           setState(() {
@@ -209,7 +212,8 @@ class _SubjectReviewsState extends State<SubjectReviews> {
 
                     bool currentUserIsCommenter = comment['userId'] ==
                         FirebaseAuth.instance.currentUser?.uid;
-                    bool currentUserIsAdmin = await UserFinki.checkCurrentUserIsAdmin();
+                    bool currentUserIsAdmin = await UserFinki
+                        .checkCurrentUserIsAdmin();
 
                     return ListTile(
                       title: Text(userName),
@@ -276,23 +280,34 @@ class _SubjectReviewsState extends State<SubjectReviews> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.cyan.shade200,
         title: Text(widget.subject.name),
       ),
-      body: ListView.builder(
-        itemCount: allComments.length,
-        itemBuilder: (context, index) {
-          final comment = allComments[index];
-          return ListTile(
-            title: Text('${comment['userName']} - ${comment['userEmail']}'),
-            subtitle: Text(comment['comment']),
-            trailing: IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: () {
-                _removeComment(comment['timestamp'], comment['comment'], setState);
-              },
-            ),
-          );
-        },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.cyan.shade200, Colors.blue.shade500],
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: allComments.length,
+          itemBuilder: (context, index) {
+            final comment = allComments[index];
+            return ListTile(
+              title: Text('${comment['userName']} - ${comment['userEmail']}'),
+              subtitle: Text(comment['comment']),
+              trailing: IconButton(
+                icon: Icon(Icons.remove),
+                onPressed: () {
+                  _removeComment(
+                      comment['timestamp'], comment['comment'], setState);
+                },
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -302,6 +317,4 @@ class _SubjectReviewsState extends State<SubjectReviews> {
       ),
     );
   }
-
 }
-

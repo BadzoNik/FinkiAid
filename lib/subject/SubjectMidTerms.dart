@@ -80,8 +80,8 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     }
 
     firebase_storage.Reference folderRef =
-          firebase_storage.FirebaseStorage
-              .instance.ref().child('images/$folderName');
+    firebase_storage.FirebaseStorage
+        .instance.ref().child('images/$folderName');
 
     try {
       firebase_storage.ListResult result = await folderRef.listAll();
@@ -195,7 +195,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
 
         if (usersSnapshot.docs.isNotEmpty) {
           final userData =
-              usersSnapshot.docs.first.data() as Map<String, dynamic>;
+          usersSnapshot.docs.first.data() as Map<String, dynamic>;
           userName = '${userData["name"] + userData["surname"]}';
         }
 
@@ -267,7 +267,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
       if (documentSnapshot.exists) {
         // Extract the images field from the document
         Map<String, List<dynamic>> images =
-            Map.from(documentSnapshot.get('images'));
+        Map.from(documentSnapshot.get('images'));
 
         // Update the state with the fetched images
         setState(() {
@@ -331,7 +331,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
 
             if (images.containsKey(imageType)) {
               final List<String> imageList =
-                  List<String>.from(images[imageType]);
+              List<String>.from(images[imageType]);
               imageList.removeWhere((image) => image == userImage);
               images[imageType] = imageList;
 
@@ -347,7 +347,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
 
           setState(() {
             allImages.removeWhere((image) =>
-                image['timestamp'] == imageTimestamp &&
+            image['timestamp'] == imageTimestamp &&
                 image['imageUrl'] == userImage &&
                 image['imageType'] == imageType);
           });
@@ -389,80 +389,102 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.cyan.shade200,
         title: Text('Mid-term: ${widget.subject.name}'),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.cyan.shade200, Colors.blue.shade500],
+          ),
+        ),
         child: Column(
           children: [
-            if(pickedFile != null)
-              Image.file(
-                File(pickedFile!.path!),
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-              ),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: allImages.length,
-              itemBuilder: (context, index) {
-                return Container(
+            if (pickedFile != null)
+              Card(
+                color: Colors.white, // Set the background color to white
+                child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
+                    border: Border.all(color: Colors.black, width: 2.0), // Set border properties
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            allImages[index]['imageUrl'],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                      : null,
-                                );
-                              }
-                            },
-                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                              return Text('Error loading image');
-                            },
-                          ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: allImages[index]['userId'] == FirebaseAuth.instance.currentUser?.uid ||
-                            currentUserIsAdmin
-                            ? IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Colors.red,
-                          onPressed: () async {
-                            String userImage = allImages[index]['imageUrl'];
-                            String imageType = allImages[index]['imageType'];
-                            String imageTimestamp = allImages[index]['timestamp'];
-
-                            _removeImage(imageTimestamp, userImage, imageType, setState);
-                          },
-                        )
-                            : SizedBox()
-                      ),
-                    ],
+                  child: Image.file(
+                    File(pickedFile!.path!),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
-                );
-              },
-            )
+                ),
+              ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                ),
+                shrinkWrap: true, // Set shrinkWrap to true
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: allImages.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.white, // Set the background color to white
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 1.0), // Set border properties
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.network(
+                              allImages[index]['imageUrl'],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  );
+                                }
+                              },
+                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                return Text('Error loading image');
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: allImages[index]['userId'] == FirebaseAuth.instance.currentUser?.uid ||
+                                currentUserIsAdmin
+                                ? IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: Colors.blue.shade500,
+                              onPressed: () async {
+                                String userImage = allImages[index]['imageUrl'];
+                                String imageType = allImages[index]['imageType'];
+                                String imageTimestamp = allImages[index]['timestamp'];
+
+                                _removeImage(imageTimestamp, userImage, imageType, setState);
+                              },
+                            )
+                                : SizedBox(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -514,7 +536,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                         });
                       },
                       items:
-                          MidTermTypeImage.values.map((MidTermTypeImage type) {
+                      MidTermTypeImage.values.map((MidTermTypeImage type) {
                         return DropdownMenuItem<MidTermTypeImage>(
                           value: type,
                           child: Text(type.toString().split('.')[1]),
@@ -635,22 +657,22 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
       sourcePath: imgFile!.path!,
       aspectRatioPresets: Platform.isAndroid
           ? [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ]
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ]
           : [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio5x3,
-              CropAspectRatioPreset.ratio5x4,
-              CropAspectRatioPreset.ratio7x5,
-              CropAspectRatioPreset.ratio16x9
-            ],
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio5x3,
+        CropAspectRatioPreset.ratio5x4,
+        CropAspectRatioPreset.ratio7x5,
+        CropAspectRatioPreset.ratio16x9
+      ],
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: "Image Cropper",

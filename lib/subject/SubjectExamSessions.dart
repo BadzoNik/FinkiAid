@@ -336,12 +336,22 @@ class _SubjectExamSessionsState extends State<SubjectExamSessions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.cyan.shade200,
         title: Text('Exam Session: ${widget.subject.name}'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            GridView.builder(
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.cyan.shade200, Colors.blue.shade500],
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10.0,
@@ -359,57 +369,53 @@ class _SubjectExamSessionsState extends State<SubjectExamSessions> {
                   child: Stack(
                     children: [
                       ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child:  Image.network(
-                            allImages[index]['imageUrl'],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                      : null,
-                                );
-                              }
-                            },
-                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                              return Text('Error loading image');
-                            },
-                          ),
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Image.network(
+                          allImages[index]['imageUrl'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                    : null,
+                              );
+                            }
+                          },
+                          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                            return Text('Error loading image');
+                          },
+                        ),
                       ),
                       Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: allImages[index]['userId'] ==
-                                      FirebaseAuth.instance.currentUser?.uid ||
-                                  currentUserIsAdmin
-                              ? IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  color: Colors.red,
-                                  onPressed: () async {
-                                    String userImage =
-                                        allImages[index]['imageUrl'];
-                                    String imageType =
-                                        allImages[index]['imageType'];
-                                    String imageTimestamp =
-                                        allImages[index]['timestamp'];
+                        bottom: 0,
+                        right: 0,
+                        child: allImages[index]['userId'] == FirebaseAuth.instance.currentUser?.uid ||
+                            currentUserIsAdmin
+                            ? IconButton(
+                          icon: const Icon(Icons.delete),
+                          color: Colors.red,
+                          onPressed: () async {
+                            String userImage = allImages[index]['imageUrl'];
+                            String imageType = allImages[index]['imageType'];
+                            String imageTimestamp = allImages[index]['timestamp'];
 
-                                    _removeImage(imageTimestamp, userImage,
-                                        imageType, setState);
-                                  },
-                                )
-                              : SizedBox()),
+                            _removeImage(imageTimestamp, userImage, imageType, setState);
+                          },
+                        )
+                            : SizedBox(),
+                      ),
                     ],
                   ),
                 );
               },
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -432,6 +438,8 @@ class _SubjectExamSessionsState extends State<SubjectExamSessions> {
       ),
     );
   }
+
+
 
   final picker = ImagePicker();
 
