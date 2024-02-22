@@ -71,7 +71,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                       context,
                       MaterialPageRoute(
                         //todo cel object da se prakja??
-                        builder: (context) => SubjectDetailScreen(subject),
+                        builder: (context) => SubjectDetailScreen(subject: subject,callerIsFavoriteSubjects: false,),
                       ),
                     );
                   },

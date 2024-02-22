@@ -46,6 +46,9 @@ dependencies:
   permission_handler:
   file_picker:
 
+  connectivity_plus:
+  get:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -51,7 +51,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (isLoggedIn)
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/login');
+                    _firebaseAuth.signOut();
+                    setState(() {
+                      isLoggedIn = false;
+                    });
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pushReplacementNamed('/home');
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.blue, backgroundColor: Colors.white,

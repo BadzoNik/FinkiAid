@@ -28,6 +28,7 @@ class _SubjectReviewsState extends State<SubjectReviews> {
   void initState() {
     super.initState();
     _updateAuthState();
+    _getAllComments();
   }
 
   void _updateAuthState() {
@@ -253,6 +254,7 @@ class _SubjectReviewsState extends State<SubjectReviews> {
                     if (newComment.isNotEmpty) {
                       _submitComment(newComment, setState);
                       _commentController.clear();
+                      setState((){});
                     }
                   },
                   child: Text('Submit'),

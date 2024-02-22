@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:finkiaid/HomePage.dart';
 import 'package:finkiaid/firebase_auth/RegisterScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +10,7 @@ import '../service/user_management.dart';
 import 'Validations.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  late ConnectivityResult _connectivityResult;
   String _email = "";
   String _password = "";
   String _errorMessage = '';
@@ -28,24 +30,33 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    //signInWithGoogle();
+    _checkConnectivity();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _connectivityResult = result;
+      });
+    });
+  }
+
+  Future<void> _checkConnectivity() async {
+    ConnectivityResult connectivityResult =
+    await Connectivity().checkConnectivity();
+    setState(() {
+      _connectivityResult = connectivityResult;
+    });
   }
 
   void _handleLogin() async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
       _errorMessage = '';
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/home');
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message!;
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -65,110 +76,127 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Add the icon here
-                    Icon(
-                      Icons.people,
-                      size: 80,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 70),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(),
-                        labelText: "Email",
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.people,
+                        size: 80,
+                        color: Colors.white,
                       ),
-                      validator: Validations.validateEmail,
-                      onChanged: (value) {
-                        setState(() {
-                          _email = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(),
-                        labelText: "Password",
-                      ),
-                      validator: Validations.validatePassword,
-                      onChanged: (value) {
-                        setState(() {
-                          _password = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Column(
-                      children: [
-                        Center(
-                          child: Text(_errorMessage,
-                              style: const TextStyle(color: Colors.red)),
+                      const SizedBox(height: 70),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          border: OutlineInputBorder(),
+                          labelText: "Email",
                         ),
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  //back stack na activities !!
-                                  if (_formKey.currentState!.validate()) {
-                                    _handleLogin();
-                                  }
-                                },
-                                child: Text("Login"),
-                              ),
-                              SizedBox(width: 10), // Add space between buttons
-                              Text('or'),
-                              SizedBox(width: 10), // Add space between buttons
-                              ElevatedButton.icon(
-                                onPressed: () async {
-                                  signInWithGoogle();
-                                },
-                                icon: Image.asset(
-                                  "assets/google_img.png",
-                                  height: 24,
-                                ),
-                                label: const Text("Login via Google"),
-                              ),
-                            ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            _email = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          border: OutlineInputBorder(),
+                          labelText: "Password",
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            _password = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Column(
+                        children: [
+                          Center(
+                            child: Text(_errorMessage,
+                                style: const TextStyle(color: Colors.red)),
                           ),
-                        ),
-                        const Text('Do not have an account yet? Register!'),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterScreen(),
-                              ),
-                                  (route) => route.isFirst,
-                            );
-                          },
-                          child: const Text("Register"),
-                        )
-                      ],
-                    ),
-                  ],
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: _connectivityResult != ConnectivityResult.none
+                                      ? () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      _handleLogin();
+                                    }
+                                  }
+                                      : null,
+                                  child: const Text("Login"),
+                                ),
+                                const SizedBox(width: 10),
+                                const Text('or'),
+                                const SizedBox(width: 10),
+                                ElevatedButton.icon(
+                                  onPressed: _connectivityResult != ConnectivityResult.none
+                                      ? () async {
+                                    signInWithGoogle();
+                                  }
+                                      : null,
+                                  icon: Image.asset(
+                                    "assets/google_img.png",
+                                    height: 24,
+                                  ),
+                                  label: const Text("Login via Google"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Text('Do not have an account yet? Register!'),
+                          ElevatedButton(
+                            onPressed: _connectivityResult != ConnectivityResult.none
+                                ? () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterScreen(),
+                                ),
+                                    (route) => route.isFirst,
+                              );
+                            }
+                                : null,
+                            child: const Text("Register"),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -201,7 +229,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _surname = "";
       }
 
-      UserFinki user = UserFinki(id: userCredential.user!.uid,
+      UserFinki user = UserFinki(
+          id: userCredential.user!.uid,
           name: _name,
           surname: _surname,
           email: _email,
