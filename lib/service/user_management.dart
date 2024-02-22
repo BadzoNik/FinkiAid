@@ -26,7 +26,6 @@ class UserManagement {
       'role': user.userRole.name
     });
 
-    Navigator.of(context).pop();
-    Navigator.of(context).pushReplacementNamed('/home');
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 }

@@ -1,22 +1,37 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool isLoggedIn = false;
+  late ConnectivityResult _connectivityResult;
 
   @override
   void initState() {
     super.initState();
     _updateAuthState();
+    _checkConnectivity();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _connectivityResult = result;
+      });
+    });
+  }
+
+  Future<void> _checkConnectivity() async {
+    ConnectivityResult connectivityResult =
+    await Connectivity().checkConnectivity();
+    setState(() {
+      _connectivityResult = connectivityResult;
+    });
   }
 
   void _updateAuthState() {
@@ -29,22 +44,30 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double buttonWidth = MediaQuery
-        .of(context)
-        .size
-        .width * 0.45;
+    double buttonWidth = MediaQuery.of(context).size.width * 0.45;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),
         backgroundColor: Colors.cyan.shade200,
         actions: [
+          if (isLoggedIn)
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/favorites');
+              },
+              child: const Text('Favorites'),
+            ),
           IconButton(
             onPressed: () async {
-              if (!isLoggedIn) {
-                Navigator.of(context).pushNamed('/login');
+              if (_connectivityResult != ConnectivityResult.none) {
+                if (!isLoggedIn) {
+                  Navigator.of(context).pushNamed('/login');
+                } else {
+                  Navigator.of(context).pushNamed('/profile');
+                }
               } else {
-                Navigator.of(context).pushNamed('/profile');
+                _showConnectivityDialog(context);
               }
             },
             icon: isLoggedIn
@@ -56,10 +79,15 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/login');
+                  if (_connectivityResult != ConnectivityResult.none) {
+                    Navigator.of(context).pushNamed('/login');
+                  } else {
+                    _showConnectivityDialog(context);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                  foregroundColor: Colors.blue,
+                  backgroundColor: Colors.white,
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -85,7 +113,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               SizedBox(height: 40),
-              // Add some spacing between login button and other buttons
               Text(
                 'Welcome!',
                 style: TextStyle(
@@ -95,16 +122,20 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 60),
-              // Adjust the spacing as needed
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/subjects');
+                      if (_connectivityResult != ConnectivityResult.none) {
+                        Navigator.of(context).pushNamed('/subjects');
+                      } else {
+                        _showConnectivityDialog(context);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
+                      backgroundColor: Colors.white,
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -123,13 +154,18 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 10), // Add some spacing between buttons
+                  SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/professors');
+                      if (_connectivityResult != ConnectivityResult.none) {
+                        Navigator.of(context).pushNamed('/professors');
+                      } else {
+                        _showConnectivityDialog(context);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
+                      backgroundColor: Colors.white,
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -151,31 +187,34 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               SizedBox(height: 360),
-              // Add spacing between the existing buttons and the new one
               Padding(
-                padding: EdgeInsets.only(right: 17.0), // Adjust the right padding as needed
+                padding: EdgeInsets.only(right: 17.0),
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Add functionality for the new button
-                      print('Favourites Button Pressed!');
+                      if (_connectivityResult != ConnectivityResult.none) {
+                        print('Favorites Button Pressed!');
+                      } else {
+                        _showConnectivityDialog(context);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue, backgroundColor: Colors.white, // Customize the color as needed
+                      foregroundColor: Colors.blue,
+                      backgroundColor: Colors.white,
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      minimumSize: Size(buttonWidth * 0.4, buttonWidth * 0.4), // Adjust the size here
+                      minimumSize: Size(buttonWidth * 0.4, buttonWidth * 0.4),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Icon(Icons.star, size: 24, color: Colors.blue), // Smaller star icon
+                        Icon(Icons.star, size: 24, color: Colors.blue),
                         SizedBox(height: 1),
                         Text(
-                          'Favourites',
+                          'Favorites',
                           style: TextStyle(fontSize: 18),
                         ),
                       ],
@@ -183,12 +222,30 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
-
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showConnectivityDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('No Internet Connection'),
+          content: Text('Please connect to the internet to continue.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
