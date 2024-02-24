@@ -32,23 +32,3 @@ you can run your mobile application from IDE.
 If you know [Predmetnik](https://docs.google.com/document/d/1-f_vt1WENMCAl2ig4qUKtuMEa_ktEitudfZX_FVGdvU/edit?fbclid=IwAR1Dd4_uydYI1sk97yGWfeNvldvBzeALLy-QoES2_30Vdmcq_YUCwAmU5RE#heading=h.265za8hxsatf)
 & [FINKI-drive](https://drive.google.com/drive/u/0/folders/1GDIqCYQev6LbaliWqBEBd2JTpjia2U3F), then this is mobile
 version of those two `:)`.
-
-- MyApp (StatelessWidget)
-    - HomeScreen (StatefulWidget)
-        - SubjectsListScreen (StatefulWidget)
-            - SubjectDetailScreen (StatefulWidget)
-                - FavoriteSubjectsScreen (StatefulWidget)
-                - mid terms
-                - exam sessions
-                - comments
-        - ProfessorsListScreen (StatefulWidget)
-            - ProfessorDetailScreen (StatefulWidget)
-                - FavoriteProfessorsScreen (StatefulWidget)
-                - rating
-                - comments
-        - Favorites link (to widget staful)
-            - listing all favorites subjects
-                - subject 1
-                    navigating subject detail screen
-                - subject 2
-                - subject 3
