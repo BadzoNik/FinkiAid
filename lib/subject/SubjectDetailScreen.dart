@@ -131,8 +131,7 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                onPrimary: Colors.blue,
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               child: Text('Mid-Terms'),
@@ -149,8 +148,7 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                onPrimary: Colors.blue,
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               child: Text('Exam-Sessions'),
@@ -166,8 +164,7 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                onPrimary: Colors.blue,
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               child: Text('View Comments'),
