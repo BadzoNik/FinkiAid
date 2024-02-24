@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkConnectivity() async {
     ConnectivityResult connectivityResult =
-    await Connectivity().checkConnectivity();
+        await Connectivity().checkConnectivity();
     setState(() {
       _connectivityResult = connectivityResult;
     });
@@ -51,13 +51,6 @@ class _HomePageState extends State<HomePage> {
         title: const Text(''),
         backgroundColor: Colors.cyan.shade200,
         actions: [
-          if (isLoggedIn)
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/favorites');
-              },
-              child: const Text('Favorites'),
-            ),
           IconButton(
             onPressed: () async {
               if (_connectivityResult != ConnectivityResult.none) {
@@ -112,8 +105,8 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 40),
-              Text(
+              const SizedBox(height: 40),
+              const Text(
                 'Welcome!',
                 style: TextStyle(
                   fontSize: 30,
@@ -121,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -142,9 +135,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       minimumSize: Size(buttonWidth, buttonWidth),
                     ),
-                    child: Column(
+                    child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Icon(Icons.book, size: 32),
                         SizedBox(height: 8),
                         Text(
@@ -154,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () {
                       if (_connectivityResult != ConnectivityResult.none) {
@@ -172,9 +165,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       minimumSize: Size(buttonWidth, buttonWidth),
                     ),
-                    child: Column(
+                    child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Icon(Icons.people, size: 32),
                         SizedBox(height: 8),
                         Text(
@@ -186,43 +179,47 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 360),
-              Padding(
-                padding: EdgeInsets.only(right: 17.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_connectivityResult != ConnectivityResult.none) {
-                        print('Favorites Button Pressed!');
-                      } else {
-                        _showConnectivityDialog(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                      backgroundColor: Colors.white,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      minimumSize: Size(buttonWidth * 0.4, buttonWidth * 0.4),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.star, size: 24, color: Colors.blue),
-                        SizedBox(height: 1),
-                        Text(
-                          'Favorites',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
             ],
+          ),
+        ),
+      ),
+      floatingActionButton: Positioned(
+        bottom: 0,
+        right: 0,
+        child: Padding(
+          padding: EdgeInsets.only(right: 17.0, bottom: 17.0),
+          child: Container(
+            height: 60,
+            child: ElevatedButton(
+              onPressed: () {
+                if (_connectivityResult != ConnectivityResult.none) {
+                  Navigator.of(context).pushNamed('/favorites');
+                } else {
+                  _showConnectivityDialog(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.blue,
+                backgroundColor: Colors.white,
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                minimumSize:
+                    Size(buttonWidth * 0.4, 60), // Adjust the minimumSize
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.star, size: 24, color: Colors.blue),
+                  SizedBox(height: 1),
+                  Text(
+                    'Favorites',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

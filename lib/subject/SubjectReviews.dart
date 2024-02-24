@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finkiaid/model/Subject.dart';
+import 'package:finkiaid/subject/SubjectDetailScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -194,83 +195,41 @@ class _SubjectReviewsState extends State<SubjectReviews> {
 
 
   void _viewComments(BuildContext context, SubjectReviews widget,
-      List<Map<String, dynamic>> allComments) async {
+      ) async {
     TextEditingController _commentController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Text(widget.subject.name),
-              content: SingleChildScrollView(
-                child: FutureBuilder<List<Widget>>(
-                  future: Future.wait(allComments.map((comment) async {
-                    String userName =
-                        comment['userName']! + ' - ' + comment['userEmail']!;
-                    String userComment = comment['comment'] ?? '';
-
-                    bool currentUserIsCommenter = comment['userId'] ==
-                        FirebaseAuth.instance.currentUser?.uid;
-                    bool currentUserIsAdmin = await UserFinki
-                        .checkCurrentUserIsAdmin();
-
-                    return ListTile(
-                      title: Text(userName),
-                      subtitle: Text(userComment),
-                      trailing: (currentUserIsCommenter || currentUserIsAdmin)
-                          ? ElevatedButton(
-                        onPressed: () {
-                          _removeComment(comment['timestamp'],
-                              userComment, setState);
-                        },
-                        child:
-                        (currentUserIsCommenter || currentUserIsAdmin)
-                            ? Text('Remove')
-                            : null,
-                      )
-                          : null,
-                    );
-                  }).toList()),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Widget>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Column(
-                        children: snapshot.data!,
-                      );
-                    }
-                  },
-                ),
-              ),
-              actions: [
+        return AlertDialog(
+          title: Text(widget.subject.name),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
                 TextField(
                   controller: _commentController,
                   decoration: InputDecoration(labelText: 'Add a comment'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    String newComment = _commentController.text.trim();
-                    if (newComment.isNotEmpty) {
-                      _submitComment(newComment, setState);
-                      _commentController.clear();
-                      setState((){});
-                    }
-                  },
-                  child: Text('Submit'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Close'),
-                ),
               ],
-            );
-          },
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                String newComment = _commentController.text.trim();
+                if (newComment.isNotEmpty) {
+                  _submitComment(newComment , setState);
+                  _commentController.clear();
+                }
+              },
+              child: Text('Submit'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
         );
       },
     );
@@ -296,15 +255,22 @@ class _SubjectReviewsState extends State<SubjectReviews> {
           itemCount: allComments.length,
           itemBuilder: (context, index) {
             final comment = allComments[index];
-            return ListTile(
-              title: Text('${comment['userName']} - ${comment['userEmail']}'),
-              subtitle: Text(comment['comment']),
-              trailing: IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: () {
-                  _removeComment(
-                      comment['timestamp'], comment['comment'], setState);
-                },
+            return Card(
+              color: Colors.white,
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                title: Text('${comment['userName']} - ${comment['userEmail']}'),
+                subtitle: Text(comment['comment']),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete), // Use the trash can icon
+                  onPressed: () {
+                    _removeComment(
+                      comment['timestamp'],
+                      comment['comment'],
+                      setState,
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -312,7 +278,7 @@ class _SubjectReviewsState extends State<SubjectReviews> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _viewComments(context, widget, allComments);
+          _viewComments(context, widget);
         },
         child: Icon(Icons.comment),
       ),

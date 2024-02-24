@@ -69,7 +69,6 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,18 +76,18 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
         title: Text(widget.subject.name),
         leading: widget.callerIsFavoriteSubjects
             ? IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).popUntil(ModalRoute.withName('/home'));
-
-                  Navigator.pushNamed(context, '/favorites');
-                },
-              )
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+            Navigator.pushNamed(context, '/favorites');
+          },
+        )
             : null,
         actions: [
           IconButton(
-            icon:
-                isFavorite ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+            icon: isFavorite
+                ? Icon(Icons.favorite)
+                : Icon(Icons.favorite_border),
             onPressed: () {
               // Toggle the favorite status when the heart icon is pressed
               setState(() {
@@ -101,43 +100,84 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
             },
           ),
         ],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.cyan.shade200, Colors.cyan.shade200],
+            ),
+          ),
+        ),
       ),
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.cyan.shade200, Colors.blue.shade500],
+          ),
+        ),
         child: Column(
           children: [
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SubjectMidTerms(widget.subject),
-                      ));
-                },
-                child: const Text('Mid-Terms')),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SubjectExamSessions(widget.subject),
-                      ));
-                },
-                child: const Text('Exam-Sessions')),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SubjectReviews(widget.subject),
-                      ));
-                },
-                child: const Text('View Comments'))
+            SizedBox(height: 60), // Adjust the top spacing as needed
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubjectMidTerms(widget.subject),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: Text('Mid-Terms'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        SubjectExamSessions(widget.subject),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: Text('Exam-Sessions'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubjectReviews(widget.subject),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.blue, backgroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: Text('View Comments'),
+            ),
+            Expanded(
+              child: Container(),
+            ),
           ],
         ),
       ),
     );
   }
+
 
   void _addToFavorites() async {
     try {
