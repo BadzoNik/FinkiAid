@@ -14,6 +14,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart' as Path;
 
+import '../FullScreenImageView.dart';
 import '../model/UserFinki.dart';
 import '../notifications/Notifications.dart';
 
@@ -392,6 +393,15 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     return 16 / 9;
   }
 
+  void _viewFullImage(BuildContext context, String imageUrl) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullScreenImageView(imageUrl: imageUrl),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -444,30 +454,33 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                       ),
                       child: Stack(
                         children: [
-                          InstaImageViewer(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image.network(
-                              allImages[index]['imageUrl'],
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                } else {
-                                  return CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  );
-                                }
-                              },
-                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                return Text('Error loading image');
-                              },
+                          GestureDetector(
+                            onTap: () {
+                              _viewFullImage(context, allImages[index]['imageUrl']);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Image.network(
+                                allImages[index]['imageUrl'],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    );
+                                  }
+                                },
+                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                  return Text('Error loading image');
+                                },
+                              ),
                             ),
-                          ),
                           ),
 
                           Positioned(
@@ -618,21 +631,15 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
 
   PlatformFile? pickedFile;
   _imgFromGallery() async {
-    await picker
-        .pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 50,
-    )
-        .then((value) {
-      if (value != null) {
-        _cropImage(File(value.path));
-      }
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    setState(() {
+      pickedFile = result.files.first;
     });
-    // final result = await FilePicker.platform.pickFiles();
-    // if(result == null) return;
-    // setState(() {
-    //   pickedFile = result.files.first;
-    // });
+
+    if(pickedFile != null) {
+      _cropImage(File(pickedFile!.path!));
+    }
   }
 
   _imgFromCamera() async {

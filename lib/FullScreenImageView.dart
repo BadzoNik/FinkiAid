@@ -28,7 +28,7 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Viewing Profile Image'),
+        title: const Text('Viewing Image'),
       ), // Add an app bar if needed
       body: Center(
         child: Container(
