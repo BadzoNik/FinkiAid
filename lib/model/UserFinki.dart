@@ -14,6 +14,7 @@ class UserFinki {
   final String email;
   final String password;
   final UserRole userRole;
+  final String userImage;
 
   UserFinki({
     required this.id,
@@ -21,7 +22,8 @@ class UserFinki {
     required this.surname,
     required this.email,
     required this.password,
-    required this.userRole
+    required this.userRole,
+    required this.userImage
   });
 
   static Future<bool> checkCurrentUserIsAdmin() async {

@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _checkConnectivity() async {
     ConnectivityResult connectivityResult =
-    await Connectivity().checkConnectivity();
+        await Connectivity().checkConnectivity();
     setState(() {
       _connectivityResult = connectivityResult;
     });
@@ -148,12 +148,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                  onPressed: _connectivityResult != ConnectivityResult.none
+                                  onPressed: _connectivityResult !=
+                                          ConnectivityResult.none
                                       ? () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      _handleLogin();
-                                    }
-                                  }
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            _handleLogin();
+                                          }
+                                        }
                                       : null,
                                   child: const Text("Login"),
                                 ),
@@ -161,10 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const Text('or'),
                                 const SizedBox(width: 10),
                                 ElevatedButton.icon(
-                                  onPressed: _connectivityResult != ConnectivityResult.none
+                                  onPressed: _connectivityResult !=
+                                          ConnectivityResult.none
                                       ? () async {
-                                    signInWithGoogle();
-                                  }
+                                          signInWithGoogle();
+                                        }
                                       : null,
                                   icon: Image.asset(
                                     "assets/google_img.png",
@@ -177,17 +180,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const Text('Do not have an account yet? Register!'),
                           ElevatedButton(
-                            onPressed: _connectivityResult != ConnectivityResult.none
-                                ? () {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterScreen(),
-                                ),
-                                    (route) => route.isFirst,
-                              );
-                            }
-                                : null,
+                            onPressed:
+                                _connectivityResult != ConnectivityResult.none
+                                    ? () {
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterScreen(),
+                                          ),
+                                          (route) => route.isFirst,
+                                        );
+                                      }
+                                    : null,
                             child: const Text("Register"),
                           )
                         ],
@@ -212,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
         accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
     final UserCredential userCredential =
-    await _auth.signInWithCredential(credential);
+        await _auth.signInWithCredential(credential);
 
     // Extract user information
     final User? user = userCredential.user;
@@ -235,7 +240,8 @@ class _LoginScreenState extends State<LoginScreen> {
           surname: _surname,
           email: _email,
           password: '',
-          userRole: UserRole.user);
+          userRole: UserRole.user,
+          userImage: "");
 
       UserManagement().storeNewUser(user, context);
 

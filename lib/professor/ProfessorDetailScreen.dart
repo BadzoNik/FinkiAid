@@ -25,6 +25,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
   double averageRating = 0.0;
   List<int> allRatings = [];
   List<Map<String, dynamic>> allComments = [];
+  bool currentUserIsAdmin = false;
 
   @override
   void initState() {
@@ -33,6 +34,15 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     _getAllRatings();
     _loadUserRating();
     _getAllComments();
+    _checkUserIsAdmin();
+  }
+
+  void _checkUserIsAdmin() async {
+    bool isAdmin = await UserFinki.checkCurrentUserIsAdmin();
+
+    setState(() {
+      currentUserIsAdmin = isAdmin;
+    });
   }
 
   void _loadUserRating() async {
@@ -115,7 +125,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     }
   }
 
-  void _submitComment(String commentText, StateSetter setState) async {
+  void _submitComment(String commentText) async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -225,83 +235,42 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
     }
   }
 
-  void _viewComments(BuildContext context, ProfessorDetailScreen widget,
+  void _showDialogForAddingComments(BuildContext context, ProfessorDetailScreen widget,
       List<Map<String, dynamic>> allComments) async {
     TextEditingController _commentController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Text(widget.professor.fullName),
-              content: SingleChildScrollView(
-                child: FutureBuilder<List<Widget>>(
-                  future: Future.wait(allComments.map((comment) async {
-                    String userName =
-                        comment['userName']! + ' - ' + comment['userEmail']!;
-                    String userComment = comment['comment'] ?? '';
-
-                    bool currentUserIsCommenter = comment['userId'] ==
-                        FirebaseAuth.instance.currentUser?.uid;
-                    bool currentUserIsAdmin = await UserFinki
-                        .checkCurrentUserIsAdmin();
-
-                    return ListTile(
-                      title: Text(userName),
-                      subtitle: Text(userComment),
-                      trailing: (currentUserIsCommenter || currentUserIsAdmin)
-                          ? ElevatedButton(
-                        onPressed: () {
-                          _removeComment(comment['timestamp'],
-                              userComment, setState);
-                        },
-                        child:
-                        (currentUserIsCommenter || currentUserIsAdmin)
-                            ? Text('Remove')
-                            : null,
-                      )
-                          : null,
-                    );
-                  }).toList()),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Widget>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Column(
-                        children: snapshot.data!,
-                      );
-                    }
-                  },
-                ),
-              ),
-              actions: [
+        return AlertDialog(
+          title: Text(widget.professor.fullName),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
                 TextField(
                   controller: _commentController,
                   decoration: InputDecoration(labelText: 'Add a comment'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    String newComment = _commentController.text.trim();
-                    if (newComment.isNotEmpty) {
-                      _submitComment(newComment, setState);
-                      _commentController.clear();
-                    }
-                  },
-                  child: Text('Submit'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Close'),
-                ),
               ],
-            );
-          },
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                String newComment = _commentController.text.trim();
+                if (newComment.isNotEmpty) {
+                  _submitComment(newComment);
+                  _commentController.clear();
+                }
+              },
+              child: Text('Submit'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
         );
       },
     );
@@ -488,7 +457,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Add Rating',
                 style: TextStyle(
                   fontSize: 20,
@@ -496,7 +465,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
                 width: 100,
                 height: 100,
@@ -514,7 +483,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
@@ -535,7 +504,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                       ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Average Rating: ${averageRating.toStringAsFixed(2)}',
                 style: TextStyle(
@@ -543,7 +512,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               if (alreadyRated)
                 ElevatedButton(
                   onPressed: () {
@@ -552,7 +521,7 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white, backgroundColor: Colors.red,
                   ),
-                  child: Text('Remove Rating'),
+                  child: const Text('Remove Rating'),
                 ),
               if (!alreadyRated)
                 ElevatedButton(
@@ -566,19 +535,56 @@ class _ProfessorDetailScreenState extends State<ProfessorDetailScreen> {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.blue, backgroundColor: Colors.white,
                   ),
-                  child: Text('Submit Rating'),
+                  child: const Text('Submit Rating'),
                 ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  _viewComments(context, widget, allComments);
+                  _showDialogForAddingComments(context, widget, allComments);
                 },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.blue, backgroundColor: Colors.white,
                 ),
-                child: Text('View Comments'),
+                child: const Text('Add Comment'),
               ),
-              SizedBox(height: 300),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allComments.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> comment = allComments[index];
+                    String userName =
+                        comment['userName']! + ' - ' + comment['userEmail']!;
+                    String userComment = comment['comment'] ?? '';
+                    bool currentUserIsCommenter =
+                        comment['userId'] == FirebaseAuth.instance.currentUser?.uid;
+                    return Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: ListTile(
+                        title: Text(userName),
+                        subtitle: Text(userComment),
+                        trailing: (currentUserIsCommenter || currentUserIsAdmin)
+                            ? IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            _removeComment(
+                              comment['timestamp'],
+                              userComment,
+                              setState,
+                            );
+                          },
+                        )
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+
             ],
           ),
         ),

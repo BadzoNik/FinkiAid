@@ -205,6 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 email: _email,
                                 password: _password,
                                 userRole: UserRole.user,
+                                userImage: ""
                               );
 
                               UserManagement().storeNewUser(user, context);
