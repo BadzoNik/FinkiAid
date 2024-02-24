@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -384,6 +385,12 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
     }
 
   }
+  double getImageAspectRatio(String imageUrl) {
+    // You can modify this function based on your image loading logic
+    // For example, you can use the image package to get the image dimensions
+    // Here, I'm assuming a constant aspect ratio of 16:9
+    return 16 / 9;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +444,8 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                       ),
                       child: Stack(
                         children: [
-                          ClipRRect(
+                          InstaImageViewer(
+                          child: ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Image.network(
                               allImages[index]['imageUrl'],
@@ -460,6 +468,8 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                               },
                             ),
                           ),
+                          ),
+
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -509,6 +519,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
       ),
     );
   }
+
 
   final picker = ImagePicker();
 

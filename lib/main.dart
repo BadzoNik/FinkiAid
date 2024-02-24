@@ -1,4 +1,5 @@
 import 'package:finkiaid/dependency_injection.dart';
+import 'package:finkiaid/model/Subject.dart';
 import 'package:finkiaid/professor/ProfessorsScreen.dart';
 import 'package:finkiaid/ProfileScreen.dart';
 import 'package:finkiaid/firebase_auth/LoginScreen.dart';
@@ -11,7 +12,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'firebase_auth/firebase_options.dart';
 import 'HomePage.dart';
-import 'model/Subject.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

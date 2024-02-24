@@ -191,35 +191,39 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(right: 17.0),
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_connectivityResult != ConnectivityResult.none) {
-                        print('Favorites Button Pressed!');
-                      } else {
-                        _showConnectivityDialog(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                      backgroundColor: Colors.white,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      minimumSize: Size(buttonWidth * 0.4, buttonWidth * 0.4),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.star, size: 24, color: Colors.blue),
-                        SizedBox(height: 1),
-                        Text(
-                          'Favorites',
-                          style: TextStyle(fontSize: 18),
+                  child: Container(
+                    height: 60, // Adjust the height as needed
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_connectivityResult != ConnectivityResult.none) {
+                          print('Favorites Button Pressed!');
+                        } else {
+                          _showConnectivityDialog(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.blue,
+                        backgroundColor: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      ],
+                        minimumSize: Size(buttonWidth * 0.4, 60), // Adjust the minimumSize
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.star, size: 24, color: Colors.blue),
+                          SizedBox(height: 1),
+                          Text(
+                            'Favorites',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+
                 ),
               ),
             ],
