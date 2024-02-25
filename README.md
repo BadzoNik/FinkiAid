@@ -17,6 +17,10 @@ course and last but not least, share a comment for professor at FCSE.
 - Displaying favorites subjects
 
 ### Design patterns
+- **Singleton pattern**: UserManagement instance of a class
+- **Observer pattern**: authentication state changes and 
+  network connectivity changes
+- **Repository pattern**: ProfessorsRepository & SubjectsRepository
 
 ### Installation
 

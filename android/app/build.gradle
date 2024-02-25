@@ -26,6 +26,7 @@ android {
     namespace "com.example.finkiaid"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -49,6 +50,8 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -64,4 +67,9 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+
+    var multidex_version = "2.0.1"
+    implementation("androidx.multidex:multidex:2.0.1")
+//    implementation("com.github.baseflowit:permission_handler:8.1.4")
+}

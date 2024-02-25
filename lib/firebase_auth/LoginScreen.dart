@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  UserManagement _userManagement = UserManagement.getUserInstanceFromFirebase();
 
   late ConnectivityResult _connectivityResult;
   String _email = "";
@@ -243,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
           userRole: UserRole.user,
           userImage: "");
 
-      UserManagement().storeNewUser(user, context);
+      _userManagement.storeNewUser(user, context);
 
       // UserManagement().storeNewUser(UserFinki(
       //   name: firstName,

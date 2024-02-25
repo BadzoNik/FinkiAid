@@ -24,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repeatPasswordController = TextEditingController();
+  UserManagement _userManagement = UserManagement.getUserInstanceFromFirebase();
 
   String _name = "";
   String _surname = "";
@@ -208,7 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 userImage: ""
                               );
 
-                              UserManagement().storeNewUser(user, context);
+                              _userManagement.storeNewUser(user, context);
                             }).catchError((e) {
                               print(e);
                             });

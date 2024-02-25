@@ -5,6 +5,16 @@ import 'package:uuid/uuid.dart';
 import '../model/UserFinki.dart';
 
 class UserManagement {
+
+  static UserManagement? _instance;
+
+  UserManagement._internal();
+
+  static UserManagement getUserInstanceFromFirebase() {
+    _instance ??= UserManagement._internal();
+    return _instance!;
+  }
+
   Future<void> storeNewUser(UserFinki user, BuildContext context) async {
     final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')

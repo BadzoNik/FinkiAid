@@ -49,7 +49,6 @@ dependencies:
 
   connectivity_plus:
   get:
-  insta_image_viewer:
 
 dev_dependencies:
   flutter_test:
