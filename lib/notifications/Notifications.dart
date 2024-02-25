@@ -11,7 +11,13 @@ class Notifications {
           children: [
             Icon(Icons.check_circle, color: Colors.green),
             SizedBox(width: 8),
-            Text(message),
+            Flexible(
+              child: Text(
+                message,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1, // Limit to a single line
+              ),
+            ),
           ],
         ),
       ),

@@ -78,12 +78,13 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
             ? IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).popUntil(ModalRoute.withName('/home'));
-            Navigator.pushNamed(context, '/favorites');
+            Navigator.of(context).pop();
           },
         )
             : null,
-        actions: [
+        actions: widget.callerIsFavoriteSubjects
+            ? [] // If callerIsFavoriteSubjects is true, hide the icons
+            : [
           IconButton(
             icon: isFavorite
                 ? Icon(Icons.favorite)
@@ -94,7 +95,7 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
                 if (!isLoggedIn) {
                   Navigator.of(context).pushNamed('/login');
                 } else {
-                  _addToFavorites();
+                  _addOrRemoveInFavorites();
                 }
               });
             },
@@ -179,7 +180,7 @@ class _SubjectDetailScreenState extends State<SubjectDetailScreen> {
   }
 
 
-  void _addToFavorites() async {
+  void _addOrRemoveInFavorites() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {

@@ -92,7 +92,9 @@ class _FavoriteSubjectsScreenState extends State<FavoriteSubjectsScreen> {
             favoriteSubjects.removeWhere((element) => element.subjectId == subject.id);
           });
           Notifications.showPopUpMessage(
-              context, '${subject.name} removed from favorites!');
+            context,
+            '${subject.name}',
+          );
         }
       }
     } catch (error) {
@@ -204,7 +206,7 @@ class _FavoriteSubjectsScreenState extends State<FavoriteSubjectsScreen> {
                                     MaterialPageRoute(
                                       builder: (context) => SubjectDetailScreen(
                                         subject: subject,
-                                        callerIsFavoriteSubjects: true, // Pass the parameter here
+                                        callerIsFavoriteSubjects: true,
                                       ),
                                     ),
                                   );
