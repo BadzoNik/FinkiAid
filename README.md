@@ -18,7 +18,7 @@ course and last but not least, share a comment for professor at FCSE.
 
 ### Design patterns
 - **Singleton pattern**: UserManagement instance of a class
-- **Observer pattern**: authentication state changes and 
+- **Observer pattern**: Authentication state changes and 
   network connectivity changes
 - **Repository pattern**: ProfessorsRepository & SubjectsRepository
 
