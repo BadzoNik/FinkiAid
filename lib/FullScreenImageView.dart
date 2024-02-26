@@ -29,6 +29,15 @@ class _FullScreenImageViewState extends State<FullScreenImageView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Viewing Image'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.cyan.shade200, Colors.cyan.shade200],
+            ),
+          ),
+        ),
       ), // Add an app bar if needed
       body: Center(
         child: Container(

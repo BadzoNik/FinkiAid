@@ -408,6 +408,24 @@ class _SubjectExamSessionsState extends State<SubjectExamSessions> {
                           ),
                         ),
                       ),
+
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: Container(
+                          color: Colors.black.withOpacity(0.5),
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            allImages[index]['imageType'].toString().split("-")[1],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ),
+
                       Positioned(
                         bottom: 0,
                         right: 0,

@@ -486,6 +486,23 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                           Positioned(
                             bottom: 0,
                             right: 0,
+                            left: 0,
+                            child: Container(
+                              color: Colors.black.withOpacity(0.5),
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                allImages[index]['imageType'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
                             child: allImages[index]['userId'] == FirebaseAuth.instance.currentUser?.uid ||
                                 currentUserIsAdmin
                                 ? IconButton(
@@ -503,6 +520,7 @@ class _SubjectMidTermsState extends State<SubjectMidTerms> {
                           ),
                         ],
                       ),
+
                     ),
                   );
                 },
