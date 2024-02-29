@@ -46,9 +46,17 @@ dependencies:
   image_cropper:
   permission_handler:
   file_picker:
+  flutter_launcher_icons:
 
   connectivity_plus:
   get:
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/FinkiAid_logo.png"
+  adaptive_ivon_background: "#ffffff"
+  adaptive_ivon_foreground: "assets/FinkiAid_logo_foregorund.png"
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +87,7 @@ flutter:
    - assets/google_img.png
    - assets/add_photo_png.png
    - assets/add_photo_png_2.webp
+   - assets/FinkiAid_logo_foreground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

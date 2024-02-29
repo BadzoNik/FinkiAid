@@ -4,6 +4,7 @@ import 'package:finkiaid/professor/ProfessorsScreen.dart';
 import 'package:finkiaid/ProfileScreen.dart';
 import 'package:finkiaid/firebase_auth/LoginScreen.dart';
 import 'package:finkiaid/firebase_auth/RegisterScreen.dart';
+import 'package:finkiaid/splash_screen/SplashScreen.dart';
 import 'package:finkiaid/subject/FavoriteSubjectsScreen.dart';
 import 'package:finkiaid/subject/SubjectDetailScreen.dart';
 import 'package:finkiaid/subject/SubjectsScreen.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
       ),
-      home: const HomePage(),
+      home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => HomePage(),
         '/subjects': (BuildContext context) => SubjectsScreen(),
