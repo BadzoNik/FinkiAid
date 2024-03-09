@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "58143275308",
+    "project_id": "finkiaid",
+    "storage_bucket": "finkiaid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58143275308:android:324c176be1860d21f25489",
+        "android_client_info": {
+          "package_name": "com.example.finkiaid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABJOD7HnUB8AlHBrJb7sHma-dMnyaljow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
