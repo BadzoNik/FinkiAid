@@ -120,8 +120,10 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      if (_connectivityResult != ConnectivityResult.none) {
+                      if (_connectivityResult != ConnectivityResult.none && isLoggedIn) {
                         Navigator.of(context).pushNamed('/subjects');
+                      } else if(!isLoggedIn){
+                        Navigator.of(context).pushNamed('/login');
                       } else {
                         _showConnectivityDialog(context);
                       }
@@ -150,8 +152,10 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () {
-                      if (_connectivityResult != ConnectivityResult.none) {
+                      if (_connectivityResult != ConnectivityResult.none && isLoggedIn) {
                         Navigator.of(context).pushNamed('/professors');
+                      } else if(!isLoggedIn) {
+                        Navigator.of(context).pushNamed('/login');
                       } else {
                         _showConnectivityDialog(context);
                       }
@@ -192,8 +196,10 @@ class _HomePageState extends State<HomePage> {
             height: 60,
             child: ElevatedButton(
               onPressed: () {
-                if (_connectivityResult != ConnectivityResult.none) {
+                if (_connectivityResult != ConnectivityResult.none && isLoggedIn) {
                   Navigator.of(context).pushNamed('/favorites');
+                } else if(!isLoggedIn) {
+                  Navigator.of(context).pushNamed('/login');
                 } else {
                   _showConnectivityDialog(context);
                 }
